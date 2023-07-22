@@ -11,8 +11,7 @@ import java.util.List;
 /**
  * @author Li Guoteng
  * @data 2023/6/2
- * @description 发送接口的参数
- *          必传
+ * @description 发送接口的参数 必传
  */
 @Data
 @Accessors(chain = true) //在生成getter和setter时,对应的setter方法调用后,会返回当前对象

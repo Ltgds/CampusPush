@@ -67,5 +67,4 @@ public class PipelineConfig {
         processController.setTemplateConfig(templateConfig);
         return processController;
     }
-
 }
