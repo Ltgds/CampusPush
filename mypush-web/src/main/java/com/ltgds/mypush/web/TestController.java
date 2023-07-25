@@ -11,6 +11,7 @@ import com.ltgds.mypush.service.api.service.SendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,14 @@ public class TestController {
     @Resource
     private SendService sendService;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    @RequestMapping("/redis")
+    private String testRedis() {
+        redisTemplate.opsForValue().set("hel", "ddd");
+        return redisTemplate.opsForValue().get("hel");
+    }
 
 
     public TestController(MessageTemplateDao messageTemplateDao) {
