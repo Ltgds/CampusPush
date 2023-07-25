@@ -1,6 +1,7 @@
-package com.ltgds.mypush.receiver;
+package com.ltgds.mypush.receiver.kafka;
 
 import com.ltgds.mypush.constans.MessageQueuePipeline;
+import com.ltgds.mypush.receiver.kafka.Receiver;
 import com.ltgds.mypush.utils.GroupIdMappingUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Header;

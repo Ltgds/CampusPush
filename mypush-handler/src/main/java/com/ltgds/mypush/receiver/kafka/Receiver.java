@@ -1,13 +1,15 @@
-package com.ltgds.mypush.receiver;
+package com.ltgds.mypush.receiver.kafka;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.ltgds.mypush.common.domain.TaskInfo;
 import com.ltgds.mypush.constans.MessageQueuePipeline;
+import com.ltgds.mypush.receiver.service.ConsumeService;
 import com.ltgds.mypush.utils.GroupIdMappingUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Scope;
@@ -31,6 +33,9 @@ import java.util.Optional;
 @ConditionalOnProperty(name = "austin.mq.pipeline", havingValue = MessageQueuePipeline.KAFKA)
 public class Receiver {
 
+    @Autowired
+    private ConsumeService consumeService;
+
     /**
      * 发送消息
      * @param consumerRecord
@@ -50,6 +55,8 @@ public class Receiver {
              */
             if (topicGroupId.equals(messageGroupId)) {
                 log.info("groupId:{},params:{}", messageGroupId, JSON.toJSONString(taskInfoLists));
+                //发送消息
+                consumeService.consume2Send(taskInfoLists);
             }
         }
     }
