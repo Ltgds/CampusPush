@@ -1,7 +1,9 @@
 package com.ltgds.mypush.deduplication;
 
+import com.ltgds.mypush.common.constant.CommonConstant;
 import com.ltgds.mypush.common.domain.TaskInfo;
 import com.ltgds.mypush.common.enums.DeduplicationType;
+import com.ltgds.mypush.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,9 @@ public class DeduplicationRuleService {
     @Autowired
     private DeduplicationHolder deduplicationHolder;
 
+    @Autowired
+    private ConfigService configService;
+
     public void duplication(TaskInfo taskInfo) {
 
         /**
@@ -28,7 +33,8 @@ public class DeduplicationRuleService {
          * {"deduplication_10":{"num":1,"time":300},"deduplication_20":{"num":5}}
          * 可通过分布式配置中心来更新配置
          */
-        String deduplicationConfig = "{\"deduplication_10\":{\"num\":1,\"time\":300},\"deduplication_20\":{\"num\":5}}";
+//        String deduplicationConfig = "{\"deduplication_10\":{\"num\":1,\"time\":300},\"deduplication_20\":{\"num\":5}}";
+        String deduplicationConfig = configService.getProperty(DEDUPLICATION_RULE_KEY, CommonConstant.EMPTY_JSON_OBJECT);
 
         //获取去重渠道列表 10:相同内容去重 20:频次去重
         List<Integer> deduplicationList = DeduplicationType.getDeduplicationList();

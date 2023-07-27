@@ -3,6 +3,7 @@ package com.ltgds.mypush.pending;
 import cn.hutool.core.collection.CollUtil;
 import com.ltgds.mypush.common.domain.TaskInfo;
 import com.ltgds.mypush.deduplication.DeduplicationRuleService;
+import com.ltgds.mypush.discard.DiscardMessageService;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +31,17 @@ public class Task implements Runnable{
     @Autowired
     DeduplicationRuleService deduplicationRuleService; //去重服务
 
+    @Autowired
+    private DiscardMessageService discardMessageService;
+
     private TaskInfo taskInfo;
 
     @Override
     public void run() {
         //1. 丢弃消息
+        if (discardMessageService.isDiscard(taskInfo)) {
+            return;
+        }
 
         //2. 屏蔽消息
 
