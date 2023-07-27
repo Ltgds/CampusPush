@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.ltgds.mypush.common.domain.TaskInfo;
 import com.ltgds.mypush.deduplication.DeduplicationRuleService;
 import com.ltgds.mypush.discard.DiscardMessageService;
+import com.ltgds.mypush.handler.HandlerHolder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,9 @@ public class Task implements Runnable{
     @Autowired
     private DiscardMessageService discardMessageService;
 
+    @Autowired
+    private HandlerHolder handlerHolder;
+
     private TaskInfo taskInfo;
 
     @Override
@@ -51,5 +55,8 @@ public class Task implements Runnable{
         }
 
         //4. 发送消息
+        if (CollUtil.isNotEmpty(taskInfo.getReceiver())) {
+            handlerHolder.route(taskInfo.getSendChannel()).doHandler(taskInfo);
+        }
     }
 }
