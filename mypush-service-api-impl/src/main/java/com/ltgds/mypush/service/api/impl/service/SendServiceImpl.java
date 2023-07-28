@@ -1,5 +1,6 @@
 package com.ltgds.mypush.service.api.impl.service;
 
+import cn.monitor4all.logRecord.annotation.OperationLog;
 import com.ltgds.mypush.common.vo.BasicResultVO;
 import com.ltgds.mypush.pipeline.ProcessContext;
 import com.ltgds.mypush.pipeline.ProcessController;
@@ -31,6 +32,7 @@ public class SendServiceImpl implements SendService {
      * @return
      */
     @Override
+    @OperationLog(bizType = "SendService#send", bizId = "#sendRequest.messageTemplateId", msg = "#sendRequest")
     public SendResponse send(SendRequest sendRequest) {
 
         SendTaskModel sendTaskModel = SendTaskModel.builder()
@@ -56,6 +58,7 @@ public class SendServiceImpl implements SendService {
      * @return
      */
     @Override
+    @OperationLog(bizType = "SendService#batchSend", bizId = "#batchSendRequest.messageTemplateId", msg = "#batchSendRequest")
     public SendResponse batchSend(BatchSendRequest batchSendRequest) {
         SendTaskModel sendTaskModel = SendTaskModel.builder()
                 .messageTemplateId(batchSendRequest.getMessageTemplateId())
