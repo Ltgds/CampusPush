@@ -14,6 +14,9 @@ import lombok.ToString;
 @AllArgsConstructor
 public enum AnchorState {
 
+
+
+
     /**
      * 消息接收成功(获取到请求)
      */

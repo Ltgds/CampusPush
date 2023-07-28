@@ -1,10 +1,12 @@
 package com.ltgds.mypush.service;
 
 import cn.hutool.core.collection.CollUtil;
+import com.ltgds.mypush.common.domain.AnchorInfo;
 import com.ltgds.mypush.common.domain.TaskInfo;
 import com.ltgds.mypush.deduplication.DeduplicationHolder;
 import com.ltgds.mypush.deduplication.DeduplicationParam;
 import com.ltgds.mypush.limit.LimitService;
+import com.ltgds.mypush.utils.LogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,6 +36,9 @@ public abstract class AbstractDeduplicationService implements DeduplicationServi
         deduplicationHolder.putService(deduplicationType, this);
     }
 
+    @Autowired
+    private LogUtils logUtils; //数据链路追踪
+
     /**
      * 去重
      * @param param
@@ -48,6 +53,13 @@ public abstract class AbstractDeduplicationService implements DeduplicationServi
         //剔除符合去重条件的用户
         if (CollUtil.isNotEmpty(filterReceiver)) {
             taskInfo.getReceiver().removeAll(filterReceiver); //删除taskInfo中符合去重条件的用户
+
+            //进行数据链路追踪-- 记录打点信息
+            logUtils.print(AnchorInfo.builder()
+                    .businessId(taskInfo.getBusinessId()) //业务id
+                            .ids(filterReceiver) //去重对象
+                            .state(param.getAnchorState().getCode()) //数据埋点类型
+                    .build());
         }
     }
 

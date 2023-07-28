@@ -25,13 +25,13 @@ import java.util.Map;
 @Configuration
 public class PipelineConfig {
 
-    @Resource
+    @Autowired
     private PreParamCheckAction preParamCheckAction;
-    @Resource
+    @Autowired
     private AssembleAction assembleAction;
-    @Resource
+    @Autowired
     private AfterParamCheckAction afterParamCheckAction;
-    @Resource
+    @Autowired
     private SendMqAction sendMqAction;
 
     /**
