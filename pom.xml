@@ -110,6 +110,13 @@
 				<artifactId>log-record-starter</artifactId>
 				<version>1.0.4.1</version>
 			</dependency>
+
+			<!--分布式日志 graylog-->
+			<dependency>
+				<groupId>de.siegmar</groupId>
+				<artifactId>logback-gelf</artifactId>
+				<version>3.0.0</version>
+			</dependency>
 		</dependencies>
 
 

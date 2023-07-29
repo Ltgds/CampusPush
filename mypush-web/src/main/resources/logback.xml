@@ -7,7 +7,7 @@
     <!-- 设置日志输出路径  可以使“${}”来使用变量。TODO 后面是可以读配置的 -->
     <property name="log.path" value="logs"/>
 
-    <springProperty scope="context" name="grayLogIp" source="austin.business.graylog.ip"/>
+    <springProperty scope="context" name="grayLogIp" source="austin.graylog.ip"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -31,13 +31,14 @@
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 每天日志归档路径以及格式 -->
-            <fileNamePattern>${log.path}/logs/austin-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${log.path}/logs/austin-info-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>1000MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
             <!--日志文件保留天数-->
             <maxHistory>15</maxHistory>
         </rollingPolicy>
+
         <!-- 此日志文件只记录info级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>info</level>
@@ -57,19 +58,52 @@
         </encoder>
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/logs/austin-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${log.path}/logs/austin-error-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>1000MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
             <!--日志文件保留天数-->
-            <maxHistory>15</maxHistory>
+            <maxHistory>3</maxHistory>
         </rollingPolicy>
+
         <!-- 此日志文件只记录ERROR级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
+    </appender>
+
+    <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+        <!--Graylog服务地址-->
+        <graylogHost>${grayLogIp}</graylogHost>
+        <!--UDP Input端口-->
+        <graylogPort>12201</graylogPort>
+        <!--最大GELF数据块大小(单位:字节), 508为最小值 最大值为 65467-->
+        <maxChunkSize>508</maxChunkSize>
+        <!--是否压缩-->
+        <useCompression>true</useCompression>
+
+        <encoder class="de.siegmar.logbackgelf.GelfEncoder">
+            <!--是否发送原生的日志信息-->
+            <includeRawMessage>false</includeRawMessage>
+            <includeMarker>true</includeMarker>
+            <includeMdcData>true</includeMdcData>
+            <includeCallerData>false</includeCallerData>
+            <includeRootCauseData>false</includeRootCauseData>
+
+            <!--是否发送日志级别的名称,否则默认以数字代表日志等级-->
+            <includeLevelName>true</includeLevelName>
+            <shortPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%m%nopex</pattern>
+            </shortPatternLayout>
+            <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%d - [%thread] %-5level %logger{35} - %msg%n</pattern>
+            </fullPatternLayout>
+
+            <!--配置应用名称(服务名称),通过staticField标签可以自定义 一些固定的日志字段-->
+            <staticField>app_name:austin</staticField>
+        </encoder>
     </appender>
 
 
@@ -79,6 +113,7 @@
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="INFO_FILE"/>
         <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="GELF"/>
     </root>
 
 </configuration>
