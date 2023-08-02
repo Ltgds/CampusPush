@@ -55,7 +55,7 @@ public class TestController {
 
     @RequestMapping("/database")
     private String testDataBase() {
-        List<MessageTemplate> list = messageTemplateDao.findAllByIsDeletedEquals(0, PageRequest.of(0, 10));
+        List<MessageTemplate> list = messageTemplateDao.findAllByIsDeletedEqualsOrderByUpdatedDesc(0, PageRequest.of(0, 10));
         return JSON.toJSONString(list);
     }
 

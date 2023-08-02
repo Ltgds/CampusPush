@@ -3,6 +3,7 @@ package com.ltgds.mypush.dao;
 import com.ltgds.mypush.domain.MessageTemplate;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * @data 2023/5/29
  * @description 消息模板Dao
  */
-public interface MessageTemplateDao extends JpaRepository<MessageTemplate, Long> {
+public interface MessageTemplateDao extends JpaRepository<MessageTemplate, Long>, JpaSpecificationExecutor<MessageTemplate> {
 
     /**
      * 查询 列表分页
@@ -20,7 +21,7 @@ public interface MessageTemplateDao extends JpaRepository<MessageTemplate, Long>
      * @param pageable 分页对象
      * @return
      */
-    List<MessageTemplate> findAllByIsDeletedEquals(Integer deleted, Pageable pageable);
+    List<MessageTemplate> findAllByIsDeletedEqualsOrderByUpdatedDesc(Integer deleted, Pageable pageable);
 
     /**
      * 统计未删除的条数

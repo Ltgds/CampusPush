@@ -15,6 +15,12 @@ import lombok.ToString;
 public enum RespStatusEnum {
 
     /**
+     * 错误
+     */
+    ERROR_500("500", "服务器未知错误"),
+    ERROR_400("400", "错误请求"),
+
+    /**
      * 操作成功
      */
     SUCCESS("0", "操作成功"),
@@ -26,6 +32,8 @@ public enum RespStatusEnum {
     CLIENT_BAD_PARAMETERS("A0001", "客户端参数错误"),
     TEMPLATE_NOT_FOUNT("A0002", "找不到模板或模板已被删除"),
     TOO_MANY_RECEIVER("A0003", "传入的接收者大于100个"),
+    DO_NOT_NEED_LOGIN("A0004", "非测试环境,无需登录"),
+    NO_LOGIN("A0005", "未登录,请先登录"),
 
     /**
      * 系统
