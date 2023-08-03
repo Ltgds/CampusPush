@@ -42,6 +42,12 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.ltgds</groupId>
+            <artifactId>mypush-cron</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
