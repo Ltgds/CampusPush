@@ -7,18 +7,23 @@ import com.ltgds.mypush.common.constant.CommonConstant;
 import com.ltgds.mypush.common.constant.PushConstant;
 import com.ltgds.mypush.common.enums.AuditStatus;
 import com.ltgds.mypush.common.enums.MessageStatus;
+import com.ltgds.mypush.common.enums.RespStatusEnum;
 import com.ltgds.mypush.common.enums.TemplateType;
 import com.ltgds.mypush.common.vo.BasicResultVO;
 import com.ltgds.mypush.dao.MessageTemplateDao;
 import com.ltgds.mypush.domain.MessageTemplate;
 import com.ltgds.mypush.web.service.MessageTemplateService;
 import com.ltgds.mypush.web.vo.MessageTemplateParam;
+import entity.XxlJobInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import service.CronTaskService;
+import utils.XxlJobUtils;
 
+import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +40,14 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
 
     @Autowired
     private MessageTemplateDao messageTemplateDao;
+
+    @Resource
+    private CronTaskService cronTaskService;
+
+    @Resource
+    private XxlJobUtils xxlJobUtils;
+
+
 
     /**
      * 查询未删除的模板列表(分页)
@@ -129,6 +142,11 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
                 .setAuditor(StrUtil.isBlank(messageTemplate.getAuditor()) ? PushConstant.DEFAULT_AUDITOR : messageTemplate.getAuditor())
                 .setCreated(Math.toIntExact(DateUtil.currentSeconds()))
                 .setIsDeleted(CommonConstant.FALSE);
+
+        //初始化定时任务相关信息
+        XxlJobInfo xxlJobInfo = xxlJobUtils.buildXxlJobInfo(messageTemplate);
+        cronTaskService.saveCronTask(xxlJobInfo);
+        cronTaskService.stopCronTask(messageTemplate.getCronTaskId());
     }
 
     /**
@@ -140,9 +158,10 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         List<MessageTemplate> messageTemplates = messageTemplateDao.findAllById(ids); //通过id拿到所有模板
         messageTemplates.forEach(messageTemplate -> messageTemplate.setIsDeleted(CommonConstant.TRUE)); //所有isDeleted = 1
 
+        //删除定时任务
         for (MessageTemplate messageTemplate : messageTemplates) {
             if (Objects.nonNull(messageTemplate.getCronTaskId()) && messageTemplate.getCronTaskId() > 0) {
-
+                cronTaskService.deleteCronTask(messageTemplate.getCronTaskId());
             }
         }
         messageTemplateDao.saveAll(messageTemplates);
@@ -172,13 +191,67 @@ public class MessageTemplateServiceImpl implements MessageTemplateService {
         }
     }
 
+    /**
+     * 启动模板定时任务
+     * @param id
+     * @return
+     */
     @Override
     public BasicResultVO startCronTask(Long id) {
-        return null;
+        //1.获取消息模板的信息
+        MessageTemplate messageTemplate = messageTemplateDao.findById(id).orElse(null);
+        if (Objects.isNull(messageTemplate)) {
+            return BasicResultVO.fail();
+        }
+
+        //2.动态创建或更新定时任务
+        XxlJobInfo xxlJobInfo = xxlJobUtils.buildXxlJobInfo(messageTemplate);
+
+        //3.获取taskId(如果本身有则复用,若不存在则得到新建后任务Id)
+        Integer taskId = messageTemplate.getCronTaskId();
+        BasicResultVO basicResultVO = cronTaskService.saveCronTask(xxlJobInfo);
+
+        if (Objects.isNull(taskId) && RespStatusEnum.SUCCESS.getCode().equals(basicResultVO.getStatus())
+                            && Objects.nonNull(basicResultVO.getData())) {
+            taskId = Integer.valueOf(String.valueOf(basicResultVO.getData()));
+        }
+
+        //4.启动定时任务
+        if (Objects.nonNull(taskId)) {
+
+            cronTaskService.startCronTask(taskId);
+
+            MessageTemplate clone = ObjectUtil.clone(messageTemplate)
+                    .setMsgStatus(MessageStatus.RUN.getCode())
+                    .setCronTaskId(taskId)
+                    .setUpdated(Math.toIntExact(DateUtil.currentSeconds()));
+            messageTemplateDao.save(clone);
+
+            return BasicResultVO.success();
+        }
+        return BasicResultVO.fail();
     }
 
+    /**
+     * 暂停模板的定时任务
+     * @param id
+     * @return
+     */
     @Override
     public BasicResultVO stopCronTask(Long id) {
-        return null;
+        //1.修改模板状态
+        MessageTemplate messageTemplate = messageTemplateDao.findById(id).orElse(null);
+
+        if (Objects.isNull(messageTemplate)) {
+            return BasicResultVO.fail();
+        }
+
+        MessageTemplate clone = ObjectUtil.clone(messageTemplate)
+                .setMsgStatus(MessageStatus.STOP.getCode()) //设置消息状态
+                .setUpdated(Math.toIntExact(DateUtil.currentSeconds())); //更新 更改时间
+        messageTemplateDao.save(clone);
+
+        //2，暂停定时任务
+        return cronTaskService.stopCronTask(clone.getCronTaskId());
     }
 }
