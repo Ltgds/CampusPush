@@ -37,7 +37,7 @@ public abstract class BaseHandler implements Handler{
 
     @Override
     public void doHandler(TaskInfo taskInfo) {
-        //
+        // 执行各个渠道的发送
         if (handler(taskInfo)) {
 
             //发送成功,打点

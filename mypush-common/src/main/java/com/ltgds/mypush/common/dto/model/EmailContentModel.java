@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author Li Guoteng
  * @data 2023/6/3
- * @description
+ * @description 邮件消息体
  */
 @Data
 @Builder

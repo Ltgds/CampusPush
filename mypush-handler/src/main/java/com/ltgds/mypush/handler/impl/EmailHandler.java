@@ -11,9 +11,11 @@ import com.ltgds.mypush.common.enums.ChannelType;
 import com.ltgds.mypush.domain.MessageTemplate;
 import com.ltgds.mypush.handler.BaseHandler;
 import com.ltgds.mypush.handler.Handler;
+import com.ltgds.mypush.utils.AccountUtils;
 import com.ltgds.mypush.utils.AustinFileUtils;
 import com.sun.mail.util.MailSSLSocketFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,9 @@ public class EmailHandler extends BaseHandler implements Handler {
 
     @Value("${austin.business.upload.crowd.path}")
     private String dataPath; //
+
+    @Autowired
+    private AccountUtils accountUtils;
 
     public EmailHandler() {
         channelCode = ChannelType.EMAIL.getCode();
@@ -69,13 +74,14 @@ public class EmailHandler extends BaseHandler implements Handler {
      * @return
      */
     private MailAccount getAccountConfig(Integer sendAccount) {
-        /**
-         * 修改 user/from/pass
-         */
-        String defaultConfig = "{\"host\":\"smtp.qq.com\",\"port\":465,\"user\":\"403686131@qq.com\"," +
-                "\"pass\":\"123123123\",\"from\":\"403686131@qq.com\",\"starttlsEnable\":\"true\",\"auth\":true,\"sslEnable\":true}";
-
-        MailAccount account = JSON.parseObject(defaultConfig, MailAccount.class);
+//        /**
+//         * 修改 user/from/pass
+//         */
+//        String defaultConfig = "{\"host\":\"smtp.qq.com\",\"port\":465,\"user\":\"403686131@qq.com\"," +
+//                "\"pass\":\"123123123\",\"from\":\"403686131@qq.com\",\"starttlsEnable\":\"true\",\"auth\":true,\"sslEnable\":true}";
+//
+////        MailAccount account = JSON.parseObject(defaultConfig, MailAccount.class);
+        MailAccount account = accountUtils.getAccountById(sendAccount, MailAccount.class);
 
         try {
             MailSSLSocketFactory sf = new MailSSLSocketFactory();
