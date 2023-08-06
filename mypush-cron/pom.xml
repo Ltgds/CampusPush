@@ -21,6 +21,17 @@
             <groupId>com.xuxueli</groupId>
             <artifactId>xxl-job-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.ltgds</groupId>
+            <artifactId>mypush-service-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ltgds</groupId>
+            <artifactId>mypush-service-api-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <properties>

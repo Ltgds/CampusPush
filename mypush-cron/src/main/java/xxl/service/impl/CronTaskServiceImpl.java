@@ -1,4 +1,4 @@
-package service.impl;
+package xxl.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
@@ -9,13 +9,13 @@ import com.google.common.base.Throwables;
 import com.ltgds.mypush.common.enums.RespStatusEnum;
 import com.ltgds.mypush.common.vo.BasicResultVO;
 import com.xxl.job.core.biz.model.ReturnT;
-import constants.XxlJobConstant;
-import entity.XxlJobGroup;
-import entity.XxlJobInfo;
+import xxl.constants.XxlJobConstant;
+import xxl.entity.XxlJobGroup;
+import xxl.entity.XxlJobInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import service.CronTaskService;
+import xxl.service.CronTaskService;
 
 import java.net.HttpCookie;
 import java.util.HashMap;

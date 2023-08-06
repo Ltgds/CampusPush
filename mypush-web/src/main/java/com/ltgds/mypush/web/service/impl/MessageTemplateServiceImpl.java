@@ -14,14 +14,14 @@ import com.ltgds.mypush.dao.MessageTemplateDao;
 import com.ltgds.mypush.domain.MessageTemplate;
 import com.ltgds.mypush.web.service.MessageTemplateService;
 import com.ltgds.mypush.web.vo.MessageTemplateParam;
-import entity.XxlJobInfo;
+import xxl.entity.XxlJobInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import service.CronTaskService;
-import utils.XxlJobUtils;
+import xxl.service.CronTaskService;
+import xxl.utils.XxlJobUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.Predicate;

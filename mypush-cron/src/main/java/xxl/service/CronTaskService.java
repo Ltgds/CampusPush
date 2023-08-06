@@ -1,8 +1,8 @@
-package service;
+package xxl.service;
 
 import com.ltgds.mypush.common.vo.BasicResultVO;
-import entity.XxlJobGroup;
-import entity.XxlJobInfo;
+import xxl.entity.XxlJobGroup;
+import xxl.entity.XxlJobInfo;
 
 /**
  * @author Li Guoteng

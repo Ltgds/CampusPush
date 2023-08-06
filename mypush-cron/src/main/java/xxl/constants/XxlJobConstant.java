@@ -1,4 +1,4 @@
-package constants;
+package xxl.constants;
 
 /**
  * @author Li Guoteng
