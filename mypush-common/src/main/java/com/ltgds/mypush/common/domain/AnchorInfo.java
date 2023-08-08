@@ -19,6 +19,18 @@ import java.util.Set;
 public class AnchorInfo {
 
     /**
+     * 业务消息发送id(数据追踪使用)
+     *
+     * 生成逻辑: TaskInfoUtils
+     */
+    private String bizId;
+
+    /**
+     * 消息唯一id(数据追踪使用)
+     */
+    private String messageId;
+
+    /**
      * 发送用户
      */
     private Set<String> ids;

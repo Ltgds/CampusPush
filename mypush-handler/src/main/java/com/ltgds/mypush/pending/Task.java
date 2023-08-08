@@ -5,6 +5,7 @@ import com.ltgds.mypush.common.domain.TaskInfo;
 import com.ltgds.mypush.deduplication.DeduplicationRuleService;
 import com.ltgds.mypush.discard.DiscardMessageService;
 import com.ltgds.mypush.handler.HandlerHolder;
+import com.ltgds.mypush.shield.ShieldService;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,9 @@ import org.springframework.stereotype.Component;
 public class Task implements Runnable{
 
     @Autowired
+    private ShieldService shieldService;
+
+    @Autowired
     DeduplicationRuleService deduplicationRuleService; //去重服务
 
     @Autowired
@@ -48,6 +52,7 @@ public class Task implements Runnable{
         }
 
         //2. 屏蔽消息
+        shieldService.shield(taskInfo);
 
         //3. 通用去重功能
         if (CollUtil.isNotEmpty(taskInfo.getReceiver())) {
