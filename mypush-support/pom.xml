@@ -104,6 +104,11 @@
             <artifactId>logback-gelf</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibaba-dingtalk-service-sdk</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
