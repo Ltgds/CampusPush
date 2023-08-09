@@ -1,14 +1,18 @@
 package com.ltgds.mypush.handler.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.nacos.shaded.com.google.common.util.concurrent.RateLimiter;
 import com.google.common.base.Throwables;
 import com.ltgds.mypush.common.domain.TaskInfo;
 import com.ltgds.mypush.common.dto.model.EmailContentModel;
 import com.ltgds.mypush.common.enums.ChannelType;
 import com.ltgds.mypush.domain.MessageTemplate;
+import com.ltgds.mypush.enums.RateLimitStrategy;
+import com.ltgds.mypush.flowcontrol.FlowControlParam;
 import com.ltgds.mypush.handler.BaseHandler;
 import com.ltgds.mypush.handler.Handler;
 import com.ltgds.mypush.utils.AccountUtils;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -40,6 +45,14 @@ public class EmailHandler extends BaseHandler implements Handler {
 
     public EmailHandler() {
         channelCode = ChannelType.EMAIL.getCode();
+
+        //按照请求限流 默认单机 3QPS 具体的配置在 apollo动态调整
+        Double rateInitValue = Double.valueOf(3);
+        flowControlParam = FlowControlParam.builder()
+                .rateLimiter(RateLimiter.create(rateInitValue))
+                .rateInitValue(rateInitValue)
+                .rateLimitStrategy(RateLimitStrategy.REQUEST_RATE_LIMIT)
+                .build();
     }
 
     /**
@@ -56,11 +69,20 @@ public class EmailHandler extends BaseHandler implements Handler {
 
         try {
             //文件
-            File file = StrUtil.isNotBlank(emailContentModel.getUrl()) ? AustinFileUtils.getRemoteUrl2File(dataPath, emailContentModel.getUrl()) : null;
-            //真正发送
-            String result = Objects.isNull(file)
+//            File file = StrUtil.isNotBlank(emailContentModel.getUrl()) ? AustinFileUtils.getRemoteUrl2File(dataPath, emailContentModel.getUrl()) : null;
+//            //真正发送
+//            String result = Objects.isNull(file)
+//                    ? MailUtil.send(account, taskInfo.getReceiver(), emailContentModel.getTitle(), emailContentModel.getContent(), true)
+//                    : MailUtil.send(account, taskInfo.getReceiver(), emailContentModel.getTitle(), emailContentModel.getContent(), true, file);
+
+            // 返回有效的File对象集合
+            List<File> files = StrUtil.isNotBlank(emailContentModel.getUrl())
+                    ? AustinFileUtils.getRemoteUrl2File(dataPath, StrUtil.split(emailContentModel.getUrl(), StrUtil.COMMA))
+                    : null;
+            //发送
+            String result = CollUtil.isEmpty(files)
                     ? MailUtil.send(account, taskInfo.getReceiver(), emailContentModel.getTitle(), emailContentModel.getContent(), true)
-                    : MailUtil.send(account, taskInfo.getReceiver(), emailContentModel.getTitle(), emailContentModel.getContent(), true, file);
+                    : MailUtil.send(account, taskInfo.getReceiver(), emailContentModel.getTitle(), emailContentModel.getContent(), true, files.toArray(new File[files.size()]));
         } catch (Exception e) {
             log.error("EmailHandler#handler fail{}, params:{}", Throwables.getStackTraceAsString(e), taskInfo);
             return false;

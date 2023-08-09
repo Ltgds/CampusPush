@@ -22,17 +22,17 @@ public enum MessageType {
     /**
      * 编码值
      */
-    private Integer code;
+    private final Integer code;
 
     /**
      * 描述
      */
-    private String description;
+    private final String description;
 
     /**
      * 英文标识
      */
-    private String codeEn;
+    private final String codeEn;
 
     /**
      * 通过code获取enum

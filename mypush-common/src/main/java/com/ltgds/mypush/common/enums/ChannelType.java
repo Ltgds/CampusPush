@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * @author Li Guoteng
  * @data 2023/6/2
@@ -37,17 +40,17 @@ public enum ChannelType {
     /**
      * 编码值
      */
-    private Integer code;
+    private final Integer code;
 
     /**
      * 描述
      */
-    private String description;
+    private final String description;
 
     /**
      * 内容模型Class
      */
-    private Class contentModelClass;
+    private final Class contentModelClass;
 
     /**
      * 英文标识
@@ -59,16 +62,16 @@ public enum ChannelType {
      * @param code
      * @return
      */
-    public static Class getChanelModelClassByCode(Integer code) {
-        ChannelType[] values = values();
-
-        for (ChannelType value : values) {
-            if (value.getCode().equals(code)) {
-                return value.getContentModelClass();
-            }
-        }
-        return null;
-    }
+//    public static Class getChanelModelClassByCode(Integer code) {
+//        ChannelType[] values = values();
+//
+//        for (ChannelType value : values) {
+//            if (value.getCode().equals(code)) {
+//                return value.getContentModelClass();
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * 通过code获取enum
@@ -86,5 +89,15 @@ public enum ChannelType {
         return null;
     }
 
+    /**
+     * 通过code获取class
+     * @param code
+     * @return
+     */
+    public static Class<? extends ContentModel> getChannelModelClassByCode(Integer code) {
+        return Arrays.stream(values()).filter(channelType -> Objects.equals(code, channelType.getCode()))
+                .map(ChannelType::getContentModelClass)
+                .findFirst().orElse(null);
+    }
 
 }
