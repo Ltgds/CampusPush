@@ -9,7 +9,7 @@ import com.dingtalk.api.response.OapiGettokenResponse;
 import com.google.common.base.Throwables;
 import com.ltgds.mypush.common.constant.CommonConstant;
 import com.ltgds.mypush.common.constant.SendAccountConstant;
-import com.ltgds.mypush.common.dto.account.DingDingWorkNoticeAccount;
+import com.ltgds.mypush.common.dto.account.dingDing.DingDingWorkNoticeAccount;
 import com.ltgds.mypush.common.enums.ChannelType;
 import com.ltgds.mypush.config.SupportThreadPoolConfig;
 import com.ltgds.mypush.dao.ChannelAccountDao;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.net.URL;
 import java.util.List;
 
 /**

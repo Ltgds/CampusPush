@@ -54,7 +54,7 @@ public class NightShieldLazyPendingHandler {
 
                 if (StrUtil.isNotBlank(taskInfo)) {
                     try {
-                        //使用kafka发送
+                        //使用kafka发送 定时任务处理
                         kafkaTemplate.send(topicName,
                                 JSON.toJSONString(Arrays.asList(JSON.parseObject(taskInfo, TaskInfo.class)),
                                         new SerializerFeature[]{SerializerFeature.WriteClassName}));

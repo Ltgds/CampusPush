@@ -2,13 +2,11 @@ package com.ltgds.mypush.handler.impl;
 
 import cn.hutool.http.ContentType;
 import cn.hutool.http.Header;
-import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Throwables;
 import com.ltgds.mypush.common.domain.TaskInfo;
-import com.ltgds.mypush.common.dto.account.EnterpriseWeChatRobotAccount;
-import com.ltgds.mypush.common.dto.model.EnterpriseWeChatContentModel;
+import com.ltgds.mypush.common.dto.account.weChat.EnterpriseWeChatRobotAccount;
 import com.ltgds.mypush.common.dto.model.EnterpriseWeChatRobotContentModel;
 import com.ltgds.mypush.common.enums.ChannelType;
 import com.ltgds.mypush.common.enums.SendMessageType;

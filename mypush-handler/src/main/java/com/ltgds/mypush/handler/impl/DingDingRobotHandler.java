@@ -9,7 +9,7 @@ import com.google.common.base.Throwables;
 import com.ltgds.mypush.common.constant.CommonConstant;
 import com.ltgds.mypush.common.constant.PushConstant;
 import com.ltgds.mypush.common.domain.TaskInfo;
-import com.ltgds.mypush.common.dto.account.DingDingRobotAccount;
+import com.ltgds.mypush.common.dto.account.dingDing.DingDingRobotAccount;
 import com.ltgds.mypush.common.dto.model.DingDingRobotContentModel;
 import com.ltgds.mypush.common.enums.ChannelType;
 import com.ltgds.mypush.common.enums.SendMessageType;
@@ -25,11 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 

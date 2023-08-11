@@ -2,7 +2,6 @@ package com.ltgds.mypush.web.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSON;
 import com.dingtalk.api.DefaultDingTalkClient;
@@ -12,7 +11,7 @@ import com.dingtalk.api.response.OapiMediaUploadResponse;
 import com.google.common.base.Throwables;
 import com.ltgds.mypush.common.constant.CommonConstant;
 import com.ltgds.mypush.common.constant.SendAccountConstant;
-import com.ltgds.mypush.common.dto.account.EnterpriseWeChatRobotAccount;
+import com.ltgds.mypush.common.dto.account.weChat.EnterpriseWeChatRobotAccount;
 import com.ltgds.mypush.common.enums.EnumUtil;
 import com.ltgds.mypush.common.enums.FileType;
 import com.ltgds.mypush.common.enums.RespStatusEnum;
@@ -32,9 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.attribute.FileTime;
 
 /**
  * @author Li Guoteng

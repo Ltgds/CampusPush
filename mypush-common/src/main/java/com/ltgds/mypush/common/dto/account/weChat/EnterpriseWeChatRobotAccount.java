@@ -1,4 +1,4 @@
-package com.ltgds.mypush.common.dto.account;
+package com.ltgds.mypush.common.dto.account.weChat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

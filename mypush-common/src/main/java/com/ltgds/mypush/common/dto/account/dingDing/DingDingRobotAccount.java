@@ -1,4 +1,4 @@
-package com.ltgds.mypush.common.dto.account;
+package com.ltgds.mypush.common.dto.account.dingDing;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
