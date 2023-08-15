@@ -56,7 +56,7 @@ public class SimpleLimitService extends AbstractLimitService{
         //不符合去重条件的用户: 需要更新Redis(无记录则添加; 有记录则累加次数)
         putInRedis(readyPutRedisReceiver, inRedisValue, param.getDeduplicationTime());
 
-        return null;
+        return filterReceiver;
     }
 
     /**
