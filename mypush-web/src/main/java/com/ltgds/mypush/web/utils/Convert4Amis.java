@@ -10,6 +10,7 @@ import com.ltgds.mypush.common.enums.ChannelType;
 import com.ltgds.mypush.domain.ChannelAccount;
 import com.ltgds.mypush.web.amis.CommonAmisVo;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplate;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -249,6 +250,82 @@ public class Convert4Amis {
             result.add(commonAmisVo);
         }
         return result;
+    }
+
+    /**
+     * 【这个方法不用看】，纯粹为了适配amis前端
+     * <p>
+     * 得到模板的参数 组装好 返回给前端展示
+     *
+     * @param wxTemplateId
+     * @param allPrivateTemplate
+     * @return
+     */
+    public static CommonAmisVo getWxMpTemplateParam(String wxTemplateId, List<WxMpTemplate> allPrivateTemplate) {
+        CommonAmisVo officialAccountParam = null;
+        for (WxMpTemplate wxMpTemplate : allPrivateTemplate) {
+            if (wxTemplateId.equals(wxMpTemplate.getTemplateId())) {
+                String[] data = wxMpTemplate.getContent().split(StrUtil.LF);
+                officialAccountParam = CommonAmisVo.builder()
+                        .type("input-table")
+                        .name("officialAccountParam")
+                        .addable(true)
+                        .editable(true)
+                        .needConfirm(false)
+                        .build();
+                List<CommonAmisVo.ColumnsDTO> columnsDtoS = new ArrayList<>();
+                for (String datum : data) {
+                    if (StrUtil.isNotEmpty(datum)) {
+                        String name = datum.substring(datum.indexOf("{{") + 2, datum.indexOf("."));
+                        CommonAmisVo.ColumnsDTO.ColumnsDTOBuilder dtoBuilder = CommonAmisVo.ColumnsDTO.builder().name(name).type("input-text").required(true).quickEdit(true);
+                        if (datum.contains("first")) {
+                            dtoBuilder.label("名字");
+                        } else if (datum.contains("remark")) {
+                            dtoBuilder.label("备注");
+                        } else {
+                            dtoBuilder.label(datum.split("：")[0]);
+                        }
+                        columnsDtoS.add(dtoBuilder.build());
+                    }
+                }
+                officialAccountParam.setColumns(columnsDtoS);
+
+            }
+        }
+        return officialAccountParam;
+    }
+    /**
+     * 【这个方法不用看】，纯粹为了适配amis前端
+     * <p>
+     * 1、得到微信服务号的【带参数】二维码返回给前端
+     * 2、让前端轮询请求 接口看是否已登录
+     *
+     * @return
+     */
+    public static CommonAmisVo getWxMpQrCode(String url, String id) {
+        CommonAmisVo image = CommonAmisVo.builder().type("static-image").value(url).originalSrc(url).name("image").label("扫描关注").fixedSize(true).fixedSizeClassName(url).fixedSizeClassName("h-32").build();
+
+        String requestAdaptor = "var openId = localStorage.getItem(\"openId\");\n" +
+                "if (openId != null && openId != 'null' && openId != '' && openId !== undefined) {\n" +
+                "    alert(\"已登录，你的ID是：\" + openId);\n" +
+                "    window.location.href = 'index.html';\n" +
+                "    return api;\n" +
+                "}";
+
+
+        String adaptor = "if (payload.data != 'NO_LOGIN' && payload.status == '0') {\n" +
+                "    localStorage.setItem(\"openId\", payload.data.openId);\n" +
+                "    alert(\"扫码已登录成功，你的ID是：\" + payload.data.openId);\n" +
+                "    window.location.href = 'index.html';\n" +
+                "}\n" +
+                "return payload;";
+
+
+        CommonAmisVo service = CommonAmisVo.builder().type("service")
+                .api(CommonAmisVo.ApiDTO.builder().url("${ls:backend_url}/officialAccount/check/login?sceneId=" + id)
+                        .adaptor(adaptor).requestAdaptor(requestAdaptor).build()).interval(2000).silentPolling(true).build();
+
+        return CommonAmisVo.builder().type("form").title("登录").mode("horizontal").body(Arrays.asList(image, service)).build();
     }
 
 }

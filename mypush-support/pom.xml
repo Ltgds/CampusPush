@@ -109,6 +109,11 @@
             <artifactId>alibaba-dingtalk-service-sdk</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

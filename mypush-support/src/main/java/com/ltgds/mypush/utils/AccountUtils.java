@@ -3,16 +3,28 @@ package com.ltgds.mypush.utils;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Throwables;
 import com.ltgds.mypush.common.constant.CommonConstant;
+import com.ltgds.mypush.common.constant.OfficialAccountParamConstant;
+import com.ltgds.mypush.common.constant.SendAccountConstant;
 import com.ltgds.mypush.common.dto.account.sms.SmsAccount;
+import com.ltgds.mypush.common.dto.account.weChat.WeChatOfficialAccount;
 import com.ltgds.mypush.common.enums.ChannelType;
 import com.ltgds.mypush.dao.ChannelAccountDao;
 import com.ltgds.mypush.domain.ChannelAccount;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.redis.RedisTemplateWxRedisOps;
+import me.chanjar.weixin.common.redis.WxRedisOps;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
+import me.chanjar.weixin.mp.config.impl.WxMpRedisConfigImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Li Guoteng
@@ -25,6 +37,11 @@ public class AccountUtils {
 
     @Autowired
     private ChannelAccountDao channelAccountDao;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    private ConcurrentMap<ChannelAccount, WxMpService> officialAccountServiceMap = new ConcurrentHashMap<>();
 
     /**
      * 微信小程序：返回WxMaService
@@ -42,13 +59,45 @@ public class AccountUtils {
             Optional<ChannelAccount> optionalChannelAccount = channelAccountDao.findById(Long.valueOf(sendAccountId));
             if (optionalChannelAccount.isPresent()) {
                 ChannelAccount channelAccount = optionalChannelAccount.get();
-                return JSON.parseObject(channelAccount.getAccountConfig(), clazz);
+                // return JSON.parseObject(channelAccount.getAccountConfig(), clazz);
+
+                if (clazz.equals(WxMpService.class)) {
+                    return (T) ConcurrentHashMapUtils.computeIfAbsent(officialAccountServiceMap, channelAccount,
+                            account -> initOfficialAccountService(JSON.parseObject(account.getAccountConfig(), WeChatOfficialAccount.class)));
+                } else {
+                    return JSON.parseObject(channelAccount.getAccountConfig(), clazz);
+                }
             }
         } catch (Exception e) {
             log.error("AccountUtils#getAccount fail! e:{}", Throwables.getStackTraceAsString(e));
         }
 
         return null;
+    }
+
+    /**
+     * 初始化微信服务号
+     * access_token 用redis存储
+     *
+     * @param officialAccount
+     * @return
+     */
+    public WxMpService initOfficialAccountService(WeChatOfficialAccount officialAccount) {
+        WxMpService wxMpService = new WxMpServiceImpl();
+        WxMpRedisConfigImpl config = new WxMpRedisConfigImpl(redisTemplateWxRedisOps(),
+                SendAccountConstant.OFFICIAL_ACCOUNT_ACCESS_TOKEN_PREFIX);
+
+        config.setAppId(officialAccount.getAppId());
+        config.setSecret(officialAccount.getSecret());
+        config.setToken(officialAccount.getToken());
+        config.useStableAccessToken(true);
+        wxMpService.setWxMpConfigStorage(config);
+        return wxMpService;
+    }
+
+    @Bean
+    public RedisTemplateWxRedisOps redisTemplateWxRedisOps() {
+        return new RedisTemplateWxRedisOps(redisTemplate);
     }
 
     /**
