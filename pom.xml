@@ -36,6 +36,8 @@
 		<maven.compiler.source>${target.java.version}</maven.compiler.source>
 		<maven.compiler.target>${target.java.version}</maven.compiler.target>
 		<weixin-java>4.5.4.B</weixin-java>
+		<flink.version>1.14.3</flink.version>
+		<scala.binary.version>2.11</scala.binary.version>
 	</properties>
 
 
@@ -155,6 +157,8 @@
 				<artifactId>weixin-java-mp</artifactId>
 				<version>${weixin-java}</version>
 			</dependency>
+
+
 		</dependencies>
 
 

@@ -64,4 +64,11 @@ public class PushConstant {
     public static final String DEFAULT_TEAM = "公众号";
     public static final String DEFAULT_AUDITOR = "ltgds";
 
+    /**
+     * 链路追踪缓存的key标识
+     */
+    public static final String CACHE_KEY_PREFIX = "Austin";
+    public static final String MESSAGE_ID = "MessageId";
+
+
 }

@@ -62,16 +62,16 @@ public enum ChannelType {
      * @param code
      * @return
      */
-//    public static Class getChanelModelClassByCode(Integer code) {
-//        ChannelType[] values = values();
-//
-//        for (ChannelType value : values) {
-//            if (value.getCode().equals(code)) {
-//                return value.getContentModelClass();
-//            }
-//        }
-//        return null;
-//    }
+    public static Class getChanelModelClassByCode(Integer code) {
+        ChannelType[] values = values();
+
+        for (ChannelType value : values) {
+            if (value.getCode().equals(code)) {
+                return value.getContentModelClass();
+            }
+        }
+        return null;
+    }
 
     /**
      * 通过code获取enum

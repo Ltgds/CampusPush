@@ -40,7 +40,7 @@ public class AfterParamCheckAction implements BusinessProcess<SendTaskModel> {
 
     @Override
     public void process(ProcessContext<SendTaskModel> context) {
-        //TODO 填充具体的逻辑
+
         SendTaskModel sendTaskModel = context.getProcessModel();
         List<TaskInfo> taskInfo = sendTaskModel.getTaskInfo(); //获取填充进去的taskInfo
 
